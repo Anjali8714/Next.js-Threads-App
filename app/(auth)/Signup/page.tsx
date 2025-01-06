@@ -1,10 +1,11 @@
 "use client";
 
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import React from "react";
-import * as Yup from "yup";
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import React from "react"
+import * as Yup from "yup"
+import { useRouter } from "next/navigation";
 
-interface UserData {
+interface UserSignupData {
   name: string;
   username: string;
   email: string;
@@ -13,7 +14,7 @@ interface UserData {
   confirmpassword: string;
 }
 
-const Signupdatas: UserData = {
+const Signupdatas: UserSignupData = {
   name: "",
   username: "",
   email: "",
@@ -25,26 +26,32 @@ const validation = Yup.object({
   name: Yup.string().required("Name is Required"),
   username: Yup.string().required("Username is Required"),
   email: Yup.string().email("Invalid email address").required("Required"),
-  phonenumber: Yup.string()
-    .matches(/^\d{10}$/,"Phone number must be 10 digits")
-    .required("Required"),
-  password: Yup.string()
-    .min(8, "Password minimum 8 digits")
-    .required("Required"),
-  confirmpassword: Yup.string().required("Incorrect confirmpassword"),
+  phonenumber: Yup.string().matches(/^\d{10}$/,"Phone number must be 10 digits").required("Required"),
+  password: Yup.string().min(8, "Password minimum 8 digits").required("Required"),
+  confirmpassword: Yup.string()
+  .oneOf([Yup.ref("password")], "Passwords must match")
+  .required("Required"),
 });
 
 const Signup = () => {
-  const onSubmit = (values: UserData) => {
-    console.log("Form data", values);
+
+  const router = useRouter();
+
+
+      const onSubmit = (values: UserSignupData) => {
+        console.log("Form data", values);
+
+        setTimeout(()=>{
+          router.push("/Login");
+        },500)
+
+    
   };
 
   return (
     <div className="flex flex-col p-6 items-center justify-center min-h-screen bg-gray-950">
       <div className="bg-transparent p-6 rounded-lg shadow-lg w-full sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-3/12 mt-5">
-        <h1 className="text-3xl font-semibold text-white text-center mb-4">
-          SignUp
-        </h1>
+        <h1 className="text-3xl font-semibold text-white text-center mb-4">SignUp</h1>
 
         <Formik
           initialValues={Signupdatas}
@@ -137,6 +144,7 @@ const Signup = () => {
               >
                 SIGN UP
               </button>
+              
             </Form>
           )}
         </Formik>
